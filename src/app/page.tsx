@@ -2,14 +2,16 @@
 
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
 import IntroScreen from "@/components/IntroScreen";
-import HeroSection from "@/components/HeroSection";
-import MemoriesSection from "@/components/MemoriesSection";
-import GiftSection from "@/components/GiftSection";
-import MusicPlayer from "@/components/MusicPlayer";
-import SmoothScroll from "@/components/SmoothScroll";
-import CursorGlow from "@/components/CursorGlow";
-import FooterSection from "@/components/FooterSection";
+
+const SmoothScroll = dynamic(() => import("@/components/SmoothScroll"), { ssr: false });
+const MusicPlayer = dynamic(() => import("@/components/MusicPlayer"), { ssr: false });
+const CursorGlow = dynamic(() => import("@/components/CursorGlow"), { ssr: false });
+const HeroSection = dynamic(() => import("@/components/HeroSection"), { ssr: false });
+const MemoriesSection = dynamic(() => import("@/components/MemoriesSection"), { ssr: false });
+const GiftSection = dynamic(() => import("@/components/GiftSection"), { ssr: false });
+const FooterSection = dynamic(() => import("@/components/FooterSection"), { ssr: false });
 
 export default function Home() {
   const [started, setStarted] = useState(false);
