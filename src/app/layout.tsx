@@ -17,7 +17,9 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "Happy Birthday, Keerthi",
   description: "A cinematic birthday experience crafted with love.",
-  metadataBase: new URL("https://birthday-keerthi.vercel.app"),
+  metadataBase: process.env.VERCEL_URL
+    ? new URL(`https://${process.env.VERCEL_URL}`)
+    : new URL("http://localhost:3000"),
   openGraph: {
     title: "Happy Birthday, Keerthi",
     description: "A cinematic birthday experience crafted with love.",
