@@ -113,6 +113,12 @@ img {
   opacity: 0.25;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .grain-overlay::before {
+    animation: none;
+  }
+}
+
 /* Magnetic cursor glow */
 .cursor-glow {
   position: fixed;
