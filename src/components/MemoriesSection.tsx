@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import gsap from "gsap";
@@ -20,13 +20,16 @@ const memoryImages = [
   "/newmem3.jpg",
 ];
 
+const VIDEO_URL = process.env.NEXT_PUBLIC_VIDEO_URL ?? "/video.mp4";
+
 export default function MemoriesSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoError, setVideoError] = useState(false);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Stagger reveal for memory cards
       if (gridRef.current) {
         const cards = gridRef.current.querySelectorAll(".memory-card");
         gsap.fromTo(
@@ -51,22 +54,40 @@ export default function MemoriesSection() {
     return () => ctx.revert();
   }, []);
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.play().catch(() => {
+      // Autoplay was blocked — try on first user interaction
+      const resume = () => {
+        video.play().catch(() => {});
+        document.removeEventListener("click", resume);
+        document.removeEventListener("touchstart", resume);
+      };
+      document.addEventListener("click", resume, { once: true });
+      document.addEventListener("touchstart", resume, { once: true });
+    });
+  }, []);
+
   return (
     <section ref={sectionRef} className="relative bg-black py-24">
       {/* Video Block */}
-      <div className="relative w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-12 lg:px-20">
-        <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black aspect-video">
-          <video
-            src="/video.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            className="absolute inset-0 w-full h-full object-contain rounded-2xl"
-          />
+      {!videoError && (
+        <div className="relative w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-12 lg:px-20">
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black aspect-video">
+            <video
+              ref={videoRef}
+              src={VIDEO_URL}
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              onError={() => setVideoError(true)}
+              className="absolute inset-0 w-full h-full object-contain rounded-2xl"
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Section header */}
       <div className="text-center py-24 md:py-28 px-6">
@@ -108,7 +129,6 @@ export default function MemoriesSection() {
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
               loading="lazy"
             />
-            {/* Hover overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent
                             opacity-60 group-hover:opacity-0 transition-opacity duration-500" />
           </div>
